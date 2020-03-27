@@ -1,0 +1,27 @@
+{
+  "name": "polygon",
+  "version": "0.0.1",
+  "description": "Determines the area of the convex hull of a point cloud in the x-y plane from STDIN and returns it to STDOUT.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gschenk/polygon.node.git"
+  },
+  "author": "gerald schenk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gschenk/polygon.node/issues"
+  },
+  "homepage": "https://github.com/gschenk/polygon.node#readme",
+  "dependencies": {
+    "jest": "^25.2.3"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.1"
+  }
+}
