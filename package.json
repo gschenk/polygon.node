@@ -4,7 +4,7 @@
   "description": "Determines the area of the convex hull of a point cloud in the x-y plane from STDIN and returns it to STDOUT.",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
