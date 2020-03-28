@@ -27,8 +27,8 @@ const sortIn = f => x => xs => {
 // comparison in cardinal directions
 // accumulator : array of points, with even number of elements
 //
-// getExtremes :: Char => (Point -> Point -> Bool) -> Point -> [Point] -> [Point]
-const getExtremes = f => (accumulator, point) => {
+// extremesReducer :: Char => (Point -> Point -> Bool) -> Point -> [Point] -> [Point]
+const extremesReducer = f => (accumulator, point) => {
   const isAfter = f(...accumulator.slice(-1))(point);
   if (isAfter) return accumulator;
 
@@ -39,30 +39,43 @@ const getExtremes = f => (accumulator, point) => {
   return sortIn(f)(point)(accumulator).slice(0, -1);
 };
 
+const getExtremes = (ps, init) => f => ps.reduce(extremesReducer(f), init);
+
+// initialAccumulator :: a -> [a]
+const initialAccumulator = n => p => Array(n).fill(p);
+
+const comparisons = {
+  left: a => b => a.x < b.x,
+  bottomLeft: a => b => a.x + a.y < b.x + b.y,
+  bottom: a => b => a.y < b.y,
+  bottomRight: a => b => a.x - a.y > b.x - b.y,
+  right: a => b => a.x > b.x,
+  topRight: a => b => a.x + a.y > b.x + b.y,
+  top: a => b => a.y > b.y,
+  topLeft: a => b => a.y - a.x > b.y - b.x,
+};
+
+
 class Extremes {
   // Extremes :: Int -> (Point -> [Point] -> [Point])
-  constructor(nAccu) {
+  constructor(nAccu, points) {
     const n = nAccu < MAXCOLLECTOR ? nAccu : MAXCOLLECTOR;
 
-    // initAccu :: a -> [a]
-    this.initAccu = p => Array(n).fill(p);
+    const initAccu = initialAccumulator(n)(points[0]);
 
-    // minXs :: Point -> [Point] -> [Point]
-    this.minXs = getExtremes(a => b => a.x < b.x);
+    const lists = Object.keys(comparisons)
+      .map(k => ({[k]: getExtremes(points, initAccu)(comparisons[k])}))
+      .reduce((os, o) => ({...os, ...o}), {});
 
-    // maxXs :: Point -> [Point] -> [Point]
-    this.maxXs = getExtremes(a => b => a.x > b.x);
 
-    // minYs :: Point -> [Point] -> [Point]
-    this.minYs = getExtremes(a => b => a.y < b.y);
+    // the first point when closing from [key] direction
+    const firsts = Object.keys(lists)
+      .map(k => ({[k]: lists[k][0]}))
+      .reduce((os, o) => ({...os, ...o}), {});
 
-    // maxYs :: Point -> [Point] -> [Point]
-    this.maxYs = getExtremes(a => b => a.y > b.y);
-
-    this.exDiaYpXn = getExtremes(a => b => a.y - a.x > b.y - b.x);
-    this.exDiaXpYn = getExtremes(a => b => a.x - a.y > b.x - b.y);
-    this.exDiaXpYp = getExtremes(a => b => a.x + a.y > b.x + b.y);
-    this.exDiaXnYn = getExtremes(a => b => a.x + a.y < b.x + b.y);
+    this.lists = lists;
+    this.firsts = firsts;
+    this.uniquePoints = [...new Set(Object.values(firsts))];
   }
 }
 
