@@ -1,11 +1,11 @@
 const ReadlineWrapper = require('./readlineWrapper');
 
 const Point = require('./point');
+const Parse = require('./parse');
 const Extremes = require('./extremes');
+const {BIGN} = require('./config');
 // const Polygon = require('./polygon');
 
-// constant parameters
-const BIGN = 3000;
 
 // sandbox area
 // const myPolygon = new Polygon(0, [myPoint]);
@@ -22,21 +22,12 @@ function convexHullArea(nodes) {
   return 0; // stub
 }
 
-// parseJsonPoints :: String -> Object
-const parseJsonPoints = s => {
-  const data = JSON.parse(s);
-  // remove duplicates for small sets of data points
-  const uniqueData = data.length > BIGN
-    ? data
-    : [...new Set(data.map(o => JSON.stringify(o)))].map(t => JSON.parse(t));
-  return uniqueData.map((a, i) => new Point(i, a.x, a.y));
-};
-
 // read input from STDIN
 const readline = new ReadlineWrapper().stdin;
 
 readline.on('line', line => {
-  const points = parseJsonPoints(line);
+  // const points = parseJsonPoints(line);
+  const points = Parse.pointsJSON(line);
 
   const extremes = new Extremes(points);
 
