@@ -33,6 +33,7 @@ Returns the area of the smallest convex polygon that encloses a point cloud. Pro
     - span polygon 
     - span polygon by extreme points
     - filter swaths of points inside that polygon
+       - note: that's apparently Akl-Toussaint heuristics
     - [optional] put outside points in clases of points before next algorithm
 
 
@@ -54,6 +55,8 @@ Returns the area of the smallest convex polygon that encloses a point cloud. Pro
 - set origin to `E_1`, get polar angle of all node-free points and `E_2`
 - the next node the point with largest phi is `E_3`, unless it is `E_2`
 - :wqcontinue
+
+This is equivalent to "Gift Wrapping" algorith or "Jarvis March" complexity `O(n h)`, where `h` are hull points
 
 Very simple, no deleting or re-assigning of edges, many coordinate transforms.
 
@@ -86,3 +89,6 @@ convex hull
 https://en.wikipedia.org/wiki/Convex_hull
 
 https://arxiv.org/pdf/1604.01428.pdf
+
+Andrew's monotone chain algorithm
+http://geomalgorithms.com/a10-_hull-1.html

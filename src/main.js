@@ -38,7 +38,7 @@ const readline = new ReadlineWrapper().stdin;
 readline.on('line', line => {
   const points = parseJsonPoints(line);
 
-  const extremes = new Extremes(4, points);
+  const extremes = new Extremes(points);
 
   const nodes = extremes.uniquePoints;
   nodes.map(xyTable);
