@@ -15,14 +15,25 @@ Returns the area of the smallest convex polygon that encloses a point cloud. Pro
     * encloses all points `{R_i}`
     * whose set of nodes `{N_k}` is a subset of the set of points `{R_i}`
 
-## Polygon
+## Polygon Strategies
 ### Cases
 - Single point, one node, no edge, no area.
 - Two points, two nodes, one edge, no area.
 - Three points, triangle.
     - unless on a line (position vectors linear dependent)
-- Few points, area by triangulating
+- Few points
+    - contain lots of dupes, might reduce to trivial cases
+    - filter for dupes after read
+    - get area by triangulating
+
 - Many points, computation time determined by complexity
+    - filtering for dupes too expensive O(n log n)
+    - ordering all too expensive O(n log n) (in two dims)
+    - finding extrema only O(n)
+    - span polygon 
+    - span polygon by extreme points
+    - filter swaths of points inside that polygon
+    - [optional] put outside points in clases of points before next algorithm
 
 
 ## brainstorming strategies
