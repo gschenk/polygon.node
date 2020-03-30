@@ -93,13 +93,31 @@ readline.on('line', line => {
   // add edges to poly
   // edges are checked to form a linked chain
   finalNodesEdges.edges.map(e => finalPoly.addEdge(e));
-  console.log(finalPoly.isClosed);
+
+  if (finalPoly.isClosed) {
+    const area = finalPoly.edges.map(e => e.detCent/2).reduce((sum, x) => sum + x)
+    if (area < 0) {
+      console.error('Error: Area smaller than zero.', area);
+      console.error('Points:');
+      format.xyTable(console.error)(
+        points,
+      );
+      console.error('Nodes:');
+      format.xyTable(console.error)(
+        finalPoly.nodes,
+      );
+      console.log(0)
+    }
+    console.log(area)
+  } else {
+    console.error('Final polygon is not closed! Edges are missing.');
+  }
 
 
   // console.log(finalNodes)
-  format.xyTable(console.log)(
-    finalPoly.nodes,
-  );
+  // format.xyTable(console.log)(
+  //   finalPoly.nodes,
+  // );
   // format.xyTable(console.log)(polyZero.edges.map(e => e.next));
 });
 
