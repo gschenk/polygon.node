@@ -57,6 +57,7 @@ function findPolyZero(points) {
 }
 
 // Warning: Side effects
+// Recursively find edges of convex hull based on an edge of P_0
 // setOutsidePointsToEdges :: Polygon -> [Point] -> undefined
 function setOutsidePointsToEdges(poly, points) {
   const reducer = (ps, e) => ps.map(p => e.findOutsidePoints(p)).filter(a => a);
@@ -65,17 +66,39 @@ function setOutsidePointsToEdges(poly, points) {
 }
 
 // pure function
-// refineEdge :: Edge -> Point -> Int -> {Nodes, Edges}
-function refineEdge(edge, centre, depth) {
+// refineEdge :: {Nodes, Edges} -> Edge -> Point -> Int -> {Nodes, Edges}
+function refineEdge(accu, edge, centre, depth) {
   const points = edge.outside;
+
+  // get starting node from accumulator
+  const origNode = accu.nodes.slice(-1)[0]
+
+  // get end node from edge, unless it links back to first node
+  const endID = edge.nodes[1].id;
+  const endNode = endID === accu.nodes[0].id
+    ? accu.nodes[0]
+    : new Node(endID, edge.nodes[1].point);
+
 
   // when there are no outside points
   // the present nodes and edge form final polygon
-  if (points.length === 0) return {nodes: edge.nodes, edges: [edge], depth};
+  // we have to create them anew for proper chaining
+  if (points.length === 0) {
+    const againEdge = new Edge(
+      edgeID(origNode, endNode),
+      origNode,
+      endNode,
+      centre,
+    );
+    return {
+      nodes: accu.nodes.concat([endNode]),
+      edges: accu.edges.concat([againEdge]),
+      depth: accu.depth.concat([depth]),
+    };
+  }
 
   // there is at least one outside point
   // form a new node with the same origin and the next node
-  const origNode = new Node(edge.origin.id, edge.origin);
   const nextNode = new Node(edge.next.id, edge.next);
 
   const nextEdge = new Edge(
@@ -86,26 +109,13 @@ function refineEdge(edge, centre, depth) {
   );
 
   // create temporary edge that links back to P_0
-  const testHead = new Node(edge.nodes[1].id, edge.nodes[1].point);
-
-  const testEdge = new Edge(
-    edgeID(nextNode, testHead),
-    nextNode,
-    testHead,
-    centre,
-  );
+  // this also gets new, temporary nodes
+  const testNodeA = new Node(0, nextNode.point);
+  const testNodeB = new Node(endNode.id, endNode.point);
+  const testEdge = new Edge(0, testNodeA, testNodeB, centre);
 
   // set outside points to edge
   points.map(p => testEdge.findOutsidePoints(p));
-
-  // if there are no points outside that edge, finish here
-  if (testEdge.maxAngle === 0) {
-    return {
-      nodes: [...nextEdge.nodes, testEdge.nodes[1]],
-      edges: [nextEdge, testEdge],
-      depth,
-    };
-  }
 
   // otherwise recursion
   // unless we risk stack overrun, no tail call recursion :-(
@@ -113,12 +123,12 @@ function refineEdge(edge, centre, depth) {
     console.error('Reached max recursion depth ', depth, ' at edge', testEdge);
     return undefined;
   }
-  const result = refineEdge(testEdge, centre, depth + 1);
-  return {
-    nodes: nextEdge.nodes.concat(result.nodes),
-    edges: [nextEdge].concat(result.edges),
-    depth: result.depth,
+  const recursionAccu = {
+    nodes: accu.nodes.concat([nextNode]),
+    edges: accu.edges.concat([nextEdge]),
+    depth: accu.depth,
   };
+  return refineEdge(recursionAccu, testEdge, centre, depth + 1);
 }
 
 
@@ -130,24 +140,33 @@ readline.on('line', line => {
   // const points = parseJsonPoints(line);
   const points = Parse.pointsJSON(line);
 
+  // construct polygon P_0
   const polyZero = findPolyZero(points);
 
+  // find all points outside of edges of P_0
   setOutsidePointsToEdges(polyZero, points);
 
-  // const insidePoints = polyZero.edges.reduce((ps, e) => ps.map(p => e.findOutsidePoints(p)).filter(a => a), points);
-  // console.log(insidePoints.length);
 
-  // console.log('main:', points.length , outsidePoints.map( as => as.length));
-  // console.log('count points outside edge_i', edgesZero.map(e => e.outside.length));
+  // go through all edges of P_0 to find P_f recursively
+  const initNode = new Node(
+    polyZero.nodes[0].id,
+    polyZero.nodes[0].point,
+  );
+  const initAccumulator = {nodes: [initNode], edges: [], depth: []};
+  const finalNodesEdges = polyZero.edges.reduce((accu, e) => refineEdge(accu, e, polyZero.centre, 0), initAccumulator);
 
-  const finalNodesEdges = polyZero.edges.map(e => refineEdge(e, polyZero.centre, 0));
-  console.log('recursion depth:', finalNodesEdges.flatMap(o => o.depth));
+  // create final polygon with nodes and edges from finalNodesEdges
+  const finalPoly = new Polygon(1, [...new Set(finalNodesEdges.nodes)]);
 
-  const finalNodes = finalNodesEdges.flatMap(o => o.nodes);
+  // add edges to poly
+  // edges are checked to form a linked chain
+  finalNodesEdges.edges.map(e => finalPoly.addEdge(e));
+  console.log(finalPoly);
+
 
   // console.log(finalNodes)
   format.xyTable(console.log)(
-    finalNodes,
+    finalPoly.nodes
   );
   // format.xyTable(console.log)(polyZero.edges.map(e => e.next));
 });
