@@ -6,6 +6,10 @@
   "scripts": {
     "test": "jest"
   },
+    "engines": {
+    "node": ">=11.0.0",
+    "npm": ">=6.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gschenk/polygon.node.git"
