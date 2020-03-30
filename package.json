@@ -1,6 +1,6 @@
 {
   "name": "polygon",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Determines the area of the convex hull of a point cloud in the x-y plane from STDIN and returns it to STDOUT.",
   "main": "main.js",
   "scripts": {
@@ -17,11 +17,11 @@
   },
   "homepage": "https://github.com/gschenk/polygon.node#readme",
   "dependencies": {
-    "jest": "^25.2.3"
+    "jest": "^25.2.4"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.1"
+    "eslint-plugin-import": "^2.20.2"
   }
 }
