@@ -2,6 +2,6 @@
 const BIGN = 3000;
 
 // maximum recursion depth
-const MAXRECURSION = 10000;
+const MAXRECURSION = 5000;
 
 module.exports = {BIGN, MAXRECURSION};
