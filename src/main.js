@@ -10,6 +10,22 @@ const Extremes = require('./extremes');
 const format = require('./format');
 // const Polygon = require('./polygon');
 
+// create edges from ordered set of nodes
+// createEdges :: [Node] -> Point -> [Edge]
+function createEdges(nodes, centre) {
+  // edgeID :: {Int}-> {Int} -> Int
+  const edgeID = (n, m) => Number.parseInt(`${n.id}${m.id}`, 10);
+
+  // moveFirstToLast [a] -> [a]
+  const moveFirstToLast = as => [...as.slice(1), as[0]];
+
+  // re-ordered list of nodes
+  const nPrime = moveFirstToLast(nodes);
+
+  return nodes.map(
+    (n, i) => new Edge(edgeID(n, nPrime[i]), n, nPrime[i], centre),
+  );
+}
 
 // Find a polygon P_0 based on easy to find convex hull points
 // findPolyZero :: Points -> Polygon
@@ -19,7 +35,7 @@ function findPolyZero(points) {
 
   // extreme points are nodes of P_0
   // these points are certain to be nodes of the convex hull
-  const nodesZero = extremes.uniquePoints.map((p, i) => new Node(i, p));
+  const nodesZero = extremes.uniquePoints.map(p => new Node(p.id, p));
 
   // put polygon P_0 together
   const polyZero = new Polygon(0, nodesZero);
@@ -27,10 +43,9 @@ function findPolyZero(points) {
   // define a point at geometric mean of polyZero
   const {centre} = polyZero;
 
+
   // create edges from ordered set of nodes
-  const edgesZero = nodesZero.map(
-    (n, i) => new Edge(i, n, [...nodesZero, nodesZero[0]][i + 1], centre),
-  );
+  const edgesZero = createEdges(nodesZero, centre);
 
   // add edges to poly
   // edges are checked to form a linked chain
