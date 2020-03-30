@@ -6,16 +6,18 @@ const Node = require('./node');
 const Edge = require('./edge');
 const Polygon = require('./polygon');
 const Extremes = require('./extremes');
+const {MAXRECURSION} = require('./config');
 
 const format = require('./format');
 // const Polygon = require('./polygon');
 
+// joins ids of nodes into a new one
+// edgeID :: {Int}-> {Int} -> Int
+const edgeID = (n, m) => Number.parseInt(`${n.id}${m.id}`, 10);
+
 // create edges from ordered set of nodes
 // createEdges :: [Node] -> Point -> [Edge]
 function createEdges(nodes, centre) {
-  // edgeID :: {Int}-> {Int} -> Int
-  const edgeID = (n, m) => Number.parseInt(`${n.id}${m.id}`, 10);
-
   // moveFirstToLast [a] -> [a]
   const moveFirstToLast = as => [...as.slice(1), as[0]];
 
@@ -55,12 +57,70 @@ function findPolyZero(points) {
 }
 
 // Warning: Side effects
-// setOutsidePointsToEdges :: Polygon -> Points -> undefined
+// setOutsidePointsToEdges :: Polygon -> [Point] -> undefined
 function setOutsidePointsToEdges(poly, points) {
   const reducer = (ps, e) => ps.map(p => e.findOutsidePoints(p)).filter(a => a);
   poly.edges.reduce(reducer, points);
   return undefined;
 }
+
+// pure function
+// refineEdge :: Edge -> Point -> Int -> {Nodes, Edges}
+function refineEdge(edge, centre, depth) {
+  const points = edge.outside;
+
+  // when there are no outside points
+  // the present nodes and edge form final polygon
+  if (points.length === 0) return {nodes: edge.nodes, edges: [edge], depth};
+
+  // there is at least one outside point
+  // form a new node with the same origin and the next node
+  const origNode = new Node(edge.origin.id, edge.origin);
+  const nextNode = new Node(edge.next.id, edge.next);
+
+  const nextEdge = new Edge(
+    edgeID(origNode, nextNode),
+    origNode,
+    nextNode,
+    centre,
+  );
+
+  // create temporary edge that links back to P_0
+  const testHead = new Node(edge.nodes[1].id, edge.nodes[1].point);
+
+  const testEdge = new Edge(
+    edgeID(nextNode, testHead),
+    nextNode,
+    testHead,
+    centre,
+  );
+
+  // set outside points to edge
+  points.map(p => testEdge.findOutsidePoints(p));
+
+  // if there are no points outside that edge, finish here
+  if (testEdge.maxAngle === 0) {
+    return {
+      nodes: [...nextEdge.nodes, testEdge.nodes[1]],
+      edges: [nextEdge, testEdge],
+      depth,
+    };
+  }
+
+  // otherwise recursion
+  // unless we risk stack overrun, no tail call recursion :-(
+  if (depth >= MAXRECURSION) {
+    console.error('Reached max recursion depth ', depth, ' at edge', testEdge);
+    return undefined;
+  }
+  const result = refineEdge(testEdge, centre, depth + 1);
+  return {
+    nodes: nextEdge.nodes.concat(result.nodes),
+    edges: [nextEdge].concat(result.edges),
+    depth: result.depth,
+  };
+}
+
 
 // read input from STDIN
 const readline = new ReadlineWrapper().stdin;
@@ -80,8 +140,16 @@ readline.on('line', line => {
   // console.log('main:', points.length , outsidePoints.map( as => as.length));
   // console.log('count points outside edge_i', edgesZero.map(e => e.outside.length));
 
-  format.xyTable(console.log)(polyZero.edges.map(e => e.next));
-  // console.log(edgesZero[2].outside.map(p => xyTable(p)));
+  const finalNodesEdges = polyZero.edges.map(e => refineEdge(e, polyZero.centre, 0));
+  console.log('recursion depth:', finalNodesEdges.flatMap(o => o.depth));
+
+  const finalNodes = finalNodesEdges.flatMap(o => o.nodes);
+
+  // console.log(finalNodes)
+  format.xyTable(console.log)(
+    finalNodes,
+  );
+  // format.xyTable(console.log)(polyZero.edges.map(e => e.next));
 });
 
 
