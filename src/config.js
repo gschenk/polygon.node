@@ -4,4 +4,7 @@ const BIGN = 3000;
 // maximum recursion depth
 const MAXRECURSION = 5000;
 
-module.exports = {BIGN, MAXRECURSION};
+// debug mode
+const DEBUG = true;
+
+module.exports = {BIGN, MAXRECURSION, DEBUG};

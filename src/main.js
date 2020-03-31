@@ -26,7 +26,7 @@ const Polygon = require('./polygon');
 const Extremes = require('./extremes');
 const {recursiveEdgeChaining} = require('./recursiveEdgeChaining');
 
-const format = require('./format');
+const ErrorLog = require('./errorlog');
 
 // joins ids of nodes into a new one
 // edgeID :: {Int}-> {Int} -> Int
@@ -82,6 +82,8 @@ function setOutsidePointsToEdges(poly, points) {
   return undefined;
 }
 
+// create logging object
+const errorlog = new ErrorLog(console.error);
 
 // read input from STDIN
 const readline = new ReadlineWrapper().stdin;
@@ -135,24 +137,32 @@ readline.on('line', line => {
       .map(e => e.detCent / 2)
       .reduce((sum, x) => sum + x)
     : NaN;
-  if (area === NaN) console.error('Final polygon is not closed! Edges are missing.');
+  if (area.isNaN) {
+    errorlog.set(
+      'Final polygon is not closed! Edges are missing.',
+      points,
+      convexHull.nodes,
+      convexHull,
+    );
+  }
 
+  // regular output
   if (Math.abs(area) < 8 * Number.EPSILON) {
     console.log(0);
   } else if (area < 0) {
-    console.error('Error: Area smaller than zero.', area);
-    console.error('Points:');
-    format.xyTable(console.error)(
+    // negative area might be a bad sign
+    errorlog.set(
+      `Error: Area (${area}) smaller than zero.`,
       points,
-    );
-    console.error('Nodes:');
-    format.xyTable(console.error)(
       convexHull.nodes,
+      (convexHull.edges.map(e => e.det)),
     );
     console.log(0);
   } else {
     console.log(area);
   }
-
-  // format.xyTable(console.log)(polyZero.edges.map(e => e.next));
-}); // end of readline 'line' callback
+  return 0;
+// end of readline 'line' callback
+}).on('close', () => {
+  errorlog.printAll();
+});
