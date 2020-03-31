@@ -8,12 +8,6 @@ class Point {
     this.y = y;
   }
 
-  // coincidence :: Point -> Bool
-  coincidence(other) {
-    console.log(this, other);
-    return this.x === other.x && this.y === other.y;
-  }
-
   json() {
     return JSON.stringify({x: this.point.x, y: this.point.y});
   }

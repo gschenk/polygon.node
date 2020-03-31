@@ -2,7 +2,8 @@
 // and up to two connected edges.
 
 class PolyNode {
-  constructor(id, point) {
+  // PolyNode :: Point -> [ -> Int ] -> Node
+  constructor(point, id = point.id) {
     // node ids ought not be unique, but tied to their point
     this.id = id;
     this.point = point;

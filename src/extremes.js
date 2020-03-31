@@ -10,10 +10,12 @@ const Vector = require('./vector');
 // points: array of points
 //
 // extremesReducer :: [(Point -> Point -> Bool)] -> [Point]-> Point -> [Point]
-const extremesReducer = fs => (acc, point) => fs.map((f, i) => f(point)(acc[i]) ? point : acc[i]);
+const extremesReducer = fs => (acc, point) => fs
+  .map((f, i) => f(point)(acc[i]) ? point : acc[i]);
 
 // getExtremes ::  [(Point -> Point -> Bool)] -> [Point]-> [Point] -> [Point]
-const getExtremes = fs => (points, init) => points.reduce(extremesReducer(fs), init);
+const getExtremes = fs => (points, init) => points
+  .reduce(extremesReducer(fs), init);
 
 
 // initialAccumulator :: a -> [a]
@@ -85,8 +87,11 @@ class Extremes {
 
     const results = getExtremes(Object.values(comparisons))(points, initAccu);
 
-    this.points = directions.reduce((o, k, i) => ({...o, ...{[k]: results[i]}}), {});
+    this.points = directions
+      .reduce((o, k, i) => ({...o, ...{[k]: results[i]}}), {});
+
     const uniquePoints = [...new Set(results)];
+
     this.uniquePoints = uniquePoints.length === 2
       ? thirdPoint(uniquePoints, points)
       : uniquePoints;

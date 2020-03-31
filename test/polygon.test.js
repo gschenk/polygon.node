@@ -23,10 +23,10 @@ const morePoints = [
 ].map((o, i) => new Point(i + 4, o.x, o.y));
 
 const centre = new Point(0, 2, 2);
-const nodes = points.map((p, i) => new PolyNode(i, p));
+const nodes = points.map(p => new PolyNode(p));
 
-const edges = [0, 1].map(i => new Edge(i, nodes[i], nodes[i + 1], centre));
-const closingEdge = new Edge(2, nodes[2], nodes[0], centre);
+const edges = [0, 1].map(i => new Edge(nodes[i], nodes[i + 1], centre));
+const closingEdge = new Edge(nodes[2], nodes[0], centre);
 
 describe('test polygons', () => {
   const poly = new Polygon(0, nodes);

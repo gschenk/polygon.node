@@ -28,10 +28,6 @@ const {recursiveEdgeChaining} = require('./recursiveEdgeChaining');
 
 const ErrorLog = require('./errorlog');
 
-// joins ids of nodes into a new one
-// edgeID :: {Int}-> {Int} -> Int
-const edgeID = (n, m) => Number.parseInt(`${n.id}${m.id}`, 10);
-
 // create edges from ordered set of nodes
 // createEdges :: [PolyNode] -> Point -> [Edge]
 function createEdges(nodes, centre) {
@@ -42,7 +38,7 @@ function createEdges(nodes, centre) {
   const nPrime = moveFirstToLast(nodes);
 
   return nodes.map(
-    (n, i) => new Edge(edgeID(n, nPrime[i]), n, nPrime[i], centre),
+    (n, i) => new Edge(n, nPrime[i], centre),
   );
 }
 
@@ -54,7 +50,7 @@ function findPolyZero(points) {
 
   // extreme points are nodes of P_0
   // these points are certain to be nodes of the convex hull
-  const nodesZero = extremes.uniquePoints.map(p => new PolyNode(p.id, p));
+  const nodesZero = extremes.uniquePoints.map(p => new PolyNode(p));
 
   // put polygon P_0 together
   const polyZero = new Polygon(0, nodesZero);
@@ -117,13 +113,12 @@ readline.on('line', line => {
 
 
   // go through all edges of P_0 to find P_f recursively
-  const initNode = new PolyNode(
-    polyZero.nodes[0].id,
-    polyZero.nodes[0].point,
-  );
-  const initAccumulator = {nodes: [initNode], edges: [], depth: []};
+  const initNode = new PolyNode(polyZero.nodes[0].point);
+  const {centre} = polyZero;
+
+  const initAccu = {nodes: [initNode], edges: [], depth: []};
   const finalNodesEdges = polyZero.edges
-    .reduce((accu, e) => recursiveEdgeChaining(accu, e, polyZero.centre, 0), initAccumulator);
+    .reduce((accu, e) => recursiveEdgeChaining(accu, e, centre, 0), initAccu);
 
   // create polygon of convex hull with nodes and edges from finalNodesEdges
   const convexHull = new Polygon(1, [...new Set(finalNodesEdges.nodes)]);
@@ -137,6 +132,7 @@ readline.on('line', line => {
       .map(e => e.detCent / 2)
       .reduce((sum, x) => sum + x)
     : NaN;
+
   if (area.isNaN) {
     errorlog.set(
       'Final polygon is not closed! Edges are missing.',
@@ -161,8 +157,6 @@ readline.on('line', line => {
   } else {
     console.log(area);
   }
-  return 0;
-// end of readline 'line' callback
-}).on('close', () => {
-  errorlog.printAll();
-});
+
+  return 0; // end of readline 'line' callback
+}).on('close', () => { errorlog.printAll(); });

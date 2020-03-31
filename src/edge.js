@@ -8,6 +8,9 @@ const Vector = require('./vector');
 // equalFloats :: Number -> Number -> Bool
 const equalFloats = (a, b) => Math.abs(a - b) < 2 * Number.EPSILON;
 
+// joins ids of nodes into a new one
+// edgeID :: {Int}-> {Int} -> Int
+const edgeID = (n, m) => Number.parseInt(`${n.id}${m.id}`, 10);
 
 // calculates the determinant of the edge vector with
 // a vector from its first node to a point
@@ -15,7 +18,8 @@ const equalFloats = (a, b) => Math.abs(a - b) < 2 * Number.EPSILON;
 const detWithPoint = (v, n) => p => Vector.det(v, Vector.fromPoints(n, p));
 
 class Edge {
-  constructor(id, nodeA, nodeB, centre) {
+  // Edge :: Node -> Node -> Point [-> Int] -> Edge
+  constructor(nodeA, nodeB, centre, id = edgeID(nodeA, nodeB)) {
     this.id = id;
     this.nodes = [nodeA, nodeB];
 

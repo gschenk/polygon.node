@@ -9,13 +9,9 @@ const PolyNode = require('./polynode');
 const Edge = require('./edge');
 const {MAXRECURSION} = require('./config');
 
-// joins ids of nodes into a new one
-// edgeID :: {Int}-> {Int} -> Int
-const edgeID = (n, m) => Number.parseInt(`${n.id}${m.id}`, 10);
-
 // pure function
 // Recursively find edges of convex hull based on an edge of P_0
-// refineEdge :: {PolyNodes, Edges} -> Edge -> Point -> Int -> {PolyNodes, Edges}
+// refineEdge :: {[PolyNode], [Edge]} -> Edge -> Point -> Int -> {[PolyNode], [Edge]}
 function recursiveEdgeChaining(accu, edge, centre, depth) {
   const points = edge.outside;
 
@@ -26,7 +22,7 @@ function recursiveEdgeChaining(accu, edge, centre, depth) {
   const endID = edge.nodes[1].id;
   const endNode = endID === accu.nodes[0].id
     ? accu.nodes[0]
-    : new PolyNode(endID, edge.nodes[1].point);
+    : new PolyNode(edge.nodes[1].point, endID);
 
 
   // when there are no outside points
@@ -34,7 +30,6 @@ function recursiveEdgeChaining(accu, edge, centre, depth) {
   // we have to create them anew for proper chaining
   if (points.length === 0) {
     const againEdge = new Edge(
-      edgeID(origNode, endNode),
       origNode,
       endNode,
       centre,
@@ -48,10 +43,9 @@ function recursiveEdgeChaining(accu, edge, centre, depth) {
 
   // there is at least one outside point
   // form a new node with the same origin and the next node
-  const nextNode = new PolyNode(edge.next.id, edge.next);
+  const nextNode = new PolyNode(edge.next);
 
   const nextEdge = new Edge(
-    edgeID(origNode, nextNode),
     origNode,
     nextNode,
     centre,
@@ -59,9 +53,9 @@ function recursiveEdgeChaining(accu, edge, centre, depth) {
 
   // create temporary edge that links back to P_0
   // this also gets new, temporary nodes
-  const testNodeA = new PolyNode(0, nextNode.point);
-  const testNodeB = new PolyNode(endNode.id, endNode.point);
-  const testEdge = new Edge(0, testNodeA, testNodeB, centre);
+  const testNodeA = new PolyNode(nextNode.point, 0);
+  const testNodeB = new PolyNode(endNode.point);
+  const testEdge = new Edge(testNodeA, testNodeB, centre, 0);
 
   // set outside points to edge
   points.map(p => testEdge.findOutsidePoints(p));
