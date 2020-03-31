@@ -1,6 +1,6 @@
 // tests edges and nodes
 
-const Node = require('../src/node');
+const Node = require('../src/polynode');
 const Edge = require('../src/edge');
 
 const Point = require('../src/point');

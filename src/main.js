@@ -20,7 +20,7 @@
 const ReadlineWrapper = require('./readlineWrapper');
 
 const Parse = require('./parse');
-const Node = require('./node');
+const Node = require('./polynode');
 const Edge = require('./edge');
 const Polygon = require('./polygon');
 const Extremes = require('./extremes');

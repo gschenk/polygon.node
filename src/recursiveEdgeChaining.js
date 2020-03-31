@@ -5,7 +5,7 @@
 // nodes and edges.
 // To be used with Array.prototype.reduce()
 
-const Node = require('./node');
+const Node = require('./polynode');
 const Edge = require('./edge');
 const {MAXRECURSION} = require('./config');
 
