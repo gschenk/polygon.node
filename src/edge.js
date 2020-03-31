@@ -11,7 +11,7 @@ const equalFloats = (a, b) => Math.abs(a - b) < 2 * Number.EPSILON;
 
 // calculates the determinant of the edge vector with
 // a vector from its first node to a point
-// detWithPoint :: Vector => Node => Point => Double
+// detWithPoint :: Vector => PolyNode => Point => Double
 const detWithPoint = (v, n) => p => Vector.det(v, Vector.fromPoints(n, p));
 
 class Edge {

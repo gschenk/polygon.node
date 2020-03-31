@@ -4,7 +4,7 @@
 const Point = require('./point');
 
 // find coordinates of geometric centre of poly
-// centre :: [Node] => Point
+// centre :: [PolyNode] => Point
 const centre = nodes => {
   const h = nodes.length;
   const x = nodes.reduce((sum, n) => sum + n.x, 0) / h;
@@ -13,7 +13,7 @@ const centre = nodes => {
 };
 
 class Polygon {
-  // Polygon :: Int -> [Node]-> { Int, [Node], Point }
+  // Polygon :: Int -> [PolyNode]-> { Int, [PolyNode], Point }
   constructor(id, nodes) {
     this.id = id;
     this.nodes = nodes;

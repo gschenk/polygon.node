@@ -1,6 +1,6 @@
 // tests edges and nodes
 
-const Node = require('../src/polynode');
+const PolyNode = require('../src/polynode');
 const Edge = require('../src/edge');
 const Polygon = require('../src/polygon');
 
@@ -23,7 +23,7 @@ const morePoints = [
 ].map((o, i) => new Point(i + 4, o.x, o.y));
 
 const centre = new Point(0, 2, 2);
-const nodes = points.map((p, i) => new Node(i, p));
+const nodes = points.map((p, i) => new PolyNode(i, p));
 
 const edges = [0, 1].map(i => new Edge(i, nodes[i], nodes[i + 1], centre));
 const closingEdge = new Edge(2, nodes[2], nodes[0], centre);

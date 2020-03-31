@@ -20,7 +20,7 @@
 const ReadlineWrapper = require('./readlineWrapper');
 
 const Parse = require('./parse');
-const Node = require('./polynode');
+const PolyNode = require('./polynode');
 const Edge = require('./edge');
 const Polygon = require('./polygon');
 const Extremes = require('./extremes');
@@ -33,7 +33,7 @@ const ErrorLog = require('./errorlog');
 const edgeID = (n, m) => Number.parseInt(`${n.id}${m.id}`, 10);
 
 // create edges from ordered set of nodes
-// createEdges :: [Node] -> Point -> [Edge]
+// createEdges :: [PolyNode] -> Point -> [Edge]
 function createEdges(nodes, centre) {
   // moveFirstToLast [a] -> [a]
   const moveFirstToLast = as => [...as.slice(1), as[0]];
@@ -54,7 +54,7 @@ function findPolyZero(points) {
 
   // extreme points are nodes of P_0
   // these points are certain to be nodes of the convex hull
-  const nodesZero = extremes.uniquePoints.map(p => new Node(p.id, p));
+  const nodesZero = extremes.uniquePoints.map(p => new PolyNode(p.id, p));
 
   // put polygon P_0 together
   const polyZero = new Polygon(0, nodesZero);
@@ -117,7 +117,7 @@ readline.on('line', line => {
 
 
   // go through all edges of P_0 to find P_f recursively
-  const initNode = new Node(
+  const initNode = new PolyNode(
     polyZero.nodes[0].id,
     polyZero.nodes[0].point,
   );

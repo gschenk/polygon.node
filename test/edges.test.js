@@ -1,6 +1,6 @@
 // tests edges and nodes
 
-const Node = require('../src/polynode');
+const PolyNode = require('../src/polynode');
 const Edge = require('../src/edge');
 
 const Point = require('../src/point');
@@ -15,7 +15,7 @@ const points = [
 const centre = new Point(0, 2.75, 0.5);
 
 describe('test nodes and edges', () => {
-  const nodes = points.map((p, i) => new Node(i, p));
+  const nodes = points.map((p, i) => new PolyNode(i, p));
   const edges = [0, 1, 2].map(i => new Edge(i, nodes[i], nodes[i + 1], centre));
 
   test('Node gets edges on edge construction', () => {

@@ -1,7 +1,7 @@
 // The node provides an object that is defined by a point
 // and up to two connected edges.
 
-class Node {
+class PolyNode {
   constructor(id, point) {
     // node ids ought not be unique, but tied to their point
     this.id = id;
@@ -25,4 +25,4 @@ class Node {
   }
 }
 
-module.exports = Node;
+module.exports = PolyNode;

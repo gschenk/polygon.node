@@ -5,7 +5,7 @@
 // nodes and edges.
 // To be used with Array.prototype.reduce()
 
-const Node = require('./polynode');
+const PolyNode = require('./polynode');
 const Edge = require('./edge');
 const {MAXRECURSION} = require('./config');
 
@@ -15,7 +15,7 @@ const edgeID = (n, m) => Number.parseInt(`${n.id}${m.id}`, 10);
 
 // pure function
 // Recursively find edges of convex hull based on an edge of P_0
-// refineEdge :: {Nodes, Edges} -> Edge -> Point -> Int -> {Nodes, Edges}
+// refineEdge :: {PolyNodes, Edges} -> Edge -> Point -> Int -> {PolyNodes, Edges}
 function recursiveEdgeChaining(accu, edge, centre, depth) {
   const points = edge.outside;
 
@@ -26,7 +26,7 @@ function recursiveEdgeChaining(accu, edge, centre, depth) {
   const endID = edge.nodes[1].id;
   const endNode = endID === accu.nodes[0].id
     ? accu.nodes[0]
-    : new Node(endID, edge.nodes[1].point);
+    : new PolyNode(endID, edge.nodes[1].point);
 
 
   // when there are no outside points
@@ -48,7 +48,7 @@ function recursiveEdgeChaining(accu, edge, centre, depth) {
 
   // there is at least one outside point
   // form a new node with the same origin and the next node
-  const nextNode = new Node(edge.next.id, edge.next);
+  const nextNode = new PolyNode(edge.next.id, edge.next);
 
   const nextEdge = new Edge(
     edgeID(origNode, nextNode),
@@ -59,8 +59,8 @@ function recursiveEdgeChaining(accu, edge, centre, depth) {
 
   // create temporary edge that links back to P_0
   // this also gets new, temporary nodes
-  const testNodeA = new Node(0, nextNode.point);
-  const testNodeB = new Node(endNode.id, endNode.point);
+  const testNodeA = new PolyNode(0, nextNode.point);
+  const testNodeB = new PolyNode(endNode.id, endNode.point);
   const testEdge = new Edge(0, testNodeA, testNodeB, centre);
 
   // set outside points to edge
