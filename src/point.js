@@ -1,3 +1,5 @@
+// Point provides x, y coordinates and an id
+
 class Point {
   // Point :: Int -> Double -> Double -> Object
   constructor(id, x, y) {

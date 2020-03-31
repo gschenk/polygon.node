@@ -1,5 +1,9 @@
+// The node provides an object that is defined by a point
+// and up to two connected edges.
+
 class Node {
   constructor(id, point) {
+    // node ids ought not be unique, but tied to their point
     this.id = id;
     this.point = point;
     this.x = point.x;

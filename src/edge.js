@@ -1,3 +1,8 @@
+// Edge provides an object to store geometric properties and linking
+// information for edges. It also holds a method to identify if a point
+// is inside or outside of the edge. The inside is defined by the vector
+// of the base point of the edge to the centre of the polygon.
+
 const Vector = require('./vector');
 
 // equalFloats :: Number -> Number -> Bool

@@ -1,5 +1,7 @@
+// Polygon stores linking information to nodes and points.
+// A polygon has to be constructed with all nodes it ought to contain.
+// Edges are added subsequently and checked for linking to nodes.
 const Point = require('./point');
-
 
 // find coordinates of geometric centre of poly
 // centre :: [Node] => Point

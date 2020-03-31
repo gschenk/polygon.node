@@ -1,3 +1,6 @@
+// parsing JSON input, and filtering duplicates from small
+// input sets
+
 const Point = require('./point');
 const {BIGN} = require('./config');
 
@@ -5,6 +8,7 @@ class Parse {
   // pointsJSON :: String -> Object
   static pointsJSON(line) {
     const data = JSON.parse(line);
+
     // remove duplicates for small sets of data points
     const uniqueData = data.length > BIGN
       ? data

@@ -33,7 +33,7 @@ const comparisons = {
   topLeft: a => b => a.y - a.x > b.y - b.x,
 };
 
-
+// secondary strategy
 // if only two extreme points are found this looks for up to two
 // more points in very narrow shapes. If all collinear, it continues with
 // two points.

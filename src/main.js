@@ -1,3 +1,22 @@
+// polygon
+//
+// This programme receives from STDIN a json formatted line containing
+// a set of points x-y--coordinates and returns the area of the convex hull.
+// That is the smallest polygon to include contain all points.
+//
+// Example input: [{"x":-1.4e-1,"y":2.19e+0},{"x":3.14e+0,"y":42}]
+//
+// The programme returns the area as a single datum (Float or Int) to STDOUT.
+//
+// Small sets (less than 3k data) are filtered for duplicates.
+//
+// Points with extreme x or y values, as well as extreme x+y and x-y values
+// are selected to form an initial polygon P_0. In some cases where only
+// two points are found a slow secondary strategy is used to find extra points.
+//
+// A recursive search is used for every edge of P_0 to find edges of the convex
+// hull.
+
 const ReadlineWrapper = require('./readlineWrapper');
 
 const Parse = require('./parse');
@@ -104,15 +123,15 @@ readline.on('line', line => {
   const finalNodesEdges = polyZero.edges
     .reduce((accu, e) => recursiveEdgeChaining(accu, e, polyZero.centre, 0), initAccumulator);
 
-  // create final polygon with nodes and edges from finalNodesEdges
-  const finalPoly = new Polygon(1, [...new Set(finalNodesEdges.nodes)]);
+  // create polygon of convex hull with nodes and edges from finalNodesEdges
+  const convexHull = new Polygon(1, [...new Set(finalNodesEdges.nodes)]);
 
   // add edges to poly
   // edges are checked to form a linked chain
-  finalNodesEdges.edges.map(e => finalPoly.addEdge(e));
+  finalNodesEdges.edges.map(e => convexHull.addEdge(e));
 
-  const area = finalPoly.isClosed
-    ? finalPoly.edges
+  const area = convexHull.isClosed
+    ? convexHull.edges
       .map(e => e.detCent / 2)
       .reduce((sum, x) => sum + x)
     : NaN;
@@ -128,7 +147,7 @@ readline.on('line', line => {
     );
     console.error('Nodes:');
     format.xyTable(console.error)(
-      finalPoly.nodes,
+      convexHull.nodes,
     );
     console.log(0);
   } else {

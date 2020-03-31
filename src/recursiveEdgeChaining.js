@@ -1,3 +1,10 @@
+// This function is applied to every edge of a polygon in sequence.
+// It will find the nodes of the complex hull polygon.
+// It will also create new nodes and edges and links them.
+// The return value is an accumulator object with lists of
+// nodes and edges.
+// To be used with Array.prototype.reduce()
+
 const Node = require('./node');
 const Edge = require('./edge');
 const {MAXRECURSION} = require('./config');
