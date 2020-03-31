@@ -40,41 +40,33 @@ Returns the area of the smallest convex polygon that encloses a point cloud. Pro
 - [x] filter duplicates when `n<NMAX` O(n log n)
 - [x] find points `{P_i}_e` extrema along cardinal and diagonal directions O(n)
 - [x] the extreme points span a polygon `P_0` 
-- []identify degenerate case `h=1` (point) END Area 0 
+- [x]identify degenerate case `h=1` (point) END Area 0 
 - [x] define a centre `C`, geometric mean of extreme points `{P_i}_e` 
 - [x] create edges 
     - [x] store determinant of vectors `N_a, C_i` and `N_a, N_b` 
 - [x] add edges to `P_0` 
-- [] identify collinearity, degenerate `h=2` END Area = 0 O(h) 
+- [x] identify collinearity, degenerate `h=2` END Area = 0 O(h) 
 - [x] check validity of polygon `P_0` (drop when not needed) 
     - [x] edges must be ordered into closed chain O(h) 
         - all nodes complete, all edge-centre determinants same sign
     - edges musst not intersect O(h^2) _Shan't do:_ ensure by careful polygon generation]
-- [] determine for all points if outside of any edge O(n h) 
+- [x] determine for all points if outside of any edge O(n h) 
     - for each edge:
     - assume reference frame of first node in edge `N_a`
     - [x] calculate determinant of position vectors `P_i` and `N_b` 
     - [x] find maximum angle of outside points (det^2 / norm^2) 
     - [x] store next node point in edge 
-- [] create final poly by doing for each poly edge 
+- [x] create final poly by doing for each poly edge 
     - if there are no points, add edge and nodes to final poly `P_f`
     - maximum angle point is a new node in `P_f` `P_i` -> `N_j`, `(N_a, N_j)` -> `E_j`
     - create new un-polyed edge `E'_j`, repeat search with points outside `E_i`
         - if there are no points `E'_j` is a node in `P_f` continue with `E_i+1`
 - [x] ensure that points already identified outside one edge are filtered out 
-- [] area of `P_f` is half the sum of its edge's determinants to centre 
+- [x] area of `P_f` is half the sum of its edge's determinants to centre 
 
 ### Improvement:
-Inscribe rectangle oriented along cardinal directions to filter out inner points
-with simple comparisons.
-- determine centroid of polygon `P_0`
-- Inscribe circle with point on closest edge point
-- Inscribe square in circle
-- Grow square into rectangle
-    - expand grid outwards from an edge opposite closest periphery point
-      with two points on line paralle to edge for each step
-    - test for each pair of points if they are within polygon `P_0`
-
+Identify nearly vertical or horizontal edges. Filter out all points in the centre-wards half-space behind the 
+node closest in `x` or `y` direction to the centre.
 
 ## brainstorming strategies
 ### grow order of polygon
