@@ -32,7 +32,6 @@ function createEdges(nodes, centre) {
 function findPolyZero(points) {
   // get points at extreme cardinal and diagonal directions
   const extremes = new Extremes(points);
-  console.log(extremes);
 
   // extreme points are nodes of P_0
   // these points are certain to be nodes of the convex hull
@@ -73,8 +72,24 @@ readline.on('line', line => {
   // const points = parseJsonPoints(line);
   const points = Parse.pointsJSON(line);
 
+  if (points.length <= 2) {
+    console.log(0);
+    return 0;
+  }
+
   // construct polygon P_0
   const polyZero = findPolyZero(points);
+
+  // check for degenerate case
+  const zeroDoubleArea = polyZero.edges
+    .map(e => e.det)
+    .map(x => Math.abs(x) < 2 * Number.EPSILON ? 0 : x)
+    .reduce((sum, x) => sum + x);
+
+  if (zeroDoubleArea < 2 * Number.EPSILON) {
+    console.log(0);
+    return 0;
+  }
 
   // find all points outside of edges of P_0
   setOutsidePointsToEdges(polyZero, points);
@@ -86,7 +101,8 @@ readline.on('line', line => {
     polyZero.nodes[0].point,
   );
   const initAccumulator = {nodes: [initNode], edges: [], depth: []};
-  const finalNodesEdges = polyZero.edges.reduce((accu, e) => recursiveEdgeChaining(accu, e, polyZero.centre, 0), initAccumulator);
+  const finalNodesEdges = polyZero.edges
+    .reduce((accu, e) => recursiveEdgeChaining(accu, e, polyZero.centre, 0), initAccumulator);
 
   // create final polygon with nodes and edges from finalNodesEdges
   const finalPoly = new Polygon(1, [...new Set(finalNodesEdges.nodes)]);
@@ -95,32 +111,29 @@ readline.on('line', line => {
   // edges are checked to form a linked chain
   finalNodesEdges.edges.map(e => finalPoly.addEdge(e));
 
-  if (finalPoly.isClosed) {
-    const area = finalPoly.edges.map(e => e.detCent/2).reduce((sum, x) => sum + x)
-    if (area < 0) {
-      console.error('Error: Area smaller than zero.', area);
-      console.error('Points:');
-      format.xyTable(console.error)(
-        points,
-      );
-      console.error('Nodes:');
-      format.xyTable(console.error)(
-        finalPoly.nodes,
-      );
-      console.log(0)
-    }
-    console.log(area)
+  const area = finalPoly.isClosed
+    ? finalPoly.edges
+      .map(e => e.detCent / 2)
+      .reduce((sum, x) => sum + x)
+    : NaN;
+  if (area === NaN) console.error('Final polygon is not closed! Edges are missing.');
+
+  if (Math.abs(area) < 8 * Number.EPSILON) {
+    console.log(0);
+  } else if (area < 0) {
+    console.error('Error: Area smaller than zero.', area);
+    console.error('Points:');
+    format.xyTable(console.error)(
+      points,
+    );
+    console.error('Nodes:');
+    format.xyTable(console.error)(
+      finalPoly.nodes,
+    );
+    console.log(0);
   } else {
-    console.error('Final polygon is not closed! Edges are missing.');
+    console.log(area);
   }
 
-
-  // console.log(finalNodes)
-  // format.xyTable(console.log)(
-  //   finalPoly.nodes,
-  // );
   // format.xyTable(console.log)(polyZero.edges.map(e => e.next));
-});
-
-
-// read a single line json formated x-y objects from STDIN
+}); // end of readline 'line' callback

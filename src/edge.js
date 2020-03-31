@@ -35,7 +35,10 @@ class Edge {
 
     // determinant with position vector of centre,
     // twice the area of triangle nodeA, nodeB, centre
-    this.detCent = Vector.det(this.vector, this.positionVector(centre));
+    const detCent = Vector.det(this.vector, this.positionVector(centre));
+    this.detCent = equalFloats(detCent, 0)
+      ? 0
+      : detCent;
 
     this.insideIsNegative = this.detCent < 0;
 
@@ -59,11 +62,11 @@ class Edge {
     const position = this.positionVector(point);
     const det = sign * Vector.det(this.vector, position);
 
-    // inside point or collinear
-    if (det > 0) return point;
-
     // collinear: forget when on edge
     if (equalFloats(det, 0)) return null;
+
+    // inside point or collinear
+    if (det > 0) return point;
 
     // otherwise outside point
     this.outside.push(point);
