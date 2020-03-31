@@ -32,6 +32,7 @@ function createEdges(nodes, centre) {
 function findPolyZero(points) {
   // get points at extreme cardinal and diagonal directions
   const extremes = new Extremes(points);
+  console.log(extremes);
 
   // extreme points are nodes of P_0
   // these points are certain to be nodes of the convex hull
