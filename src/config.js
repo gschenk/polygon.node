@@ -5,6 +5,6 @@ const BIGN = 3000;
 const MAXRECURSION = 5000;
 
 // debug mode
-const DEBUG = true;
+const DEBUG = false;
 
 module.exports = {BIGN, MAXRECURSION, DEBUG};
